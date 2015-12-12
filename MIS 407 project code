@@ -1,0 +1,30 @@
+from urllib.request import urlopen
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def data2pandas(data):
+    response = urlopen(data)
+    df = pd.read_csv(response)
+    return df
+
+submission = 'https://www.quandl.com/api/v3/datasets/148APPS/APPS_SUB.csv'
+
+a = data2pandas(submission)
+
+a['Difference'] = a['# Total'].shift() - a['# Total']
+a['Difference'] = a['Difference'].shift(-1)
+
+a['Datetime'] = pd.to_datetime(a['Month'])
+a = a.set_index('Datetime')
+
+b = a['# Total'].groupby(pd.TimeGrouper('M'))
+print(b.sum() )
+
+input("Press Enter to continue...")
+
+c = a['# Total']
+d = c[0] / len(a.index)
+print("%d is average per month." %d)
+
+if __name__ == '__main__':
+    pass
